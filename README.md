@@ -2,10 +2,6 @@
 
 # Eleventy Netlify Boilerplate
 
-### Click the button below to try it out!
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/danurbanowicz/eleventy-netlify-boilerplate&stack=cms)
-
 ## What is it?
 
 A simple template for building a fast, pre-generated HTML website using the [Eleventy](https://www.11ty.io/) static site generator. With [Netlify CMS](https://www.netlifycms.org/) baked-in, ready to deploy to [Netlify](https://www.netlify.com) in a couple of clicks.
@@ -20,10 +16,10 @@ Based on the [Eleventy Base Blog](https://github.com/11ty/eleventy-base-blog) re
 
 ## Features
 
+* NEW: Added basic support for post authors, using a simple folder collection
 * Uses the official [Eleventy Navigation](https://www.11ty.dev/docs/plugins/navigation/) plugin to build menus
 * Sample pages and a blog with tag support
 * Netlify CMS with editor previews (thanks [@biilmann](https://github.com/biilmann)!)
-* Maintenance-free post author archives
 * Includes a working contact form
 * CSS 2kb minified, inlined for fastest page render
 * Optional pipeline for minified inline JS
@@ -110,11 +106,6 @@ npx @11ty/eleventy
 Or build automatically when a template changes:
 ```
 npx @11ty/eleventy --watch
-```
-
-Or build and host locally for local development:
-```
-npx @11ty/eleventy --serve
 ```
 
 Or in debug mode:

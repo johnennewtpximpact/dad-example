@@ -1,7 +1,8 @@
 const { DateTime } = require("luxon");
 const CleanCSS = require("clean-css");
-const UglifyJS = require("uglify-js");
+const UglifyJS = require("uglify-es");
 const htmlmin = require("html-minifier");
+const slugify = require("slugify");
 const eleventyNavigationPlugin = require("@11ty/eleventy-navigation");
 
 module.exports = function(eleventyConfig) {
@@ -19,24 +20,6 @@ module.exports = function(eleventyConfig) {
   // https://www.11ty.dev/docs/data-deep-merge/
   eleventyConfig.setDataDeepMerge(true);
 
-  // Add support for maintenance-free post authors
-  // Adds an authors collection using the author key in our post frontmatter
-  // Thanks to @pdehaan: https://github.com/pdehaan
-  eleventyConfig.addCollection("authors", collection => {
-    const blogs = collection.getFilteredByGlob("posts/*.md");
-    return blogs.reduce((coll, post) => {
-      const author = post.data.author;
-      if (!author) {
-        return coll;
-      }
-      if (!coll.hasOwnProperty(author)) {
-        coll[author] = [];
-      }
-      coll[author].push(post.data);
-      return coll;
-    }, {});
-  });
-
   // Date formatting (human readable)
   eleventyConfig.addFilter("readableDate", dateObj => {
     return DateTime.fromJSDate(dateObj).toFormat("dd LLL yyyy");
@@ -45,6 +28,32 @@ module.exports = function(eleventyConfig) {
   // Date formatting (machine readable)
   eleventyConfig.addFilter("machineDate", dateObj => {
     return DateTime.fromJSDate(dateObj).toFormat("yyyy-MM-dd");
+  });
+
+  eleventyConfig.addFilter("folderFilter", function(collection, folder) {
+    return collection.filter(function(item) {
+      return item.url.startsWith(folder) && (item.template.parsed.name != 'index');
+    });
+  });
+
+  eleventyConfig.addFilter("navGroupBy", function(collection, fieldToGroupBy) {
+    const map = new Map(Array.from(collection, obj => [obj[fieldToGroupBy], []]));
+    collection.forEach(obj => map.get(obj[fieldToGroupBy]).push(obj));
+    return Array.from(map.values());
+  });
+
+  eleventyConfig.addFilter("mapSideNav", function(collection) {
+    var mappedCollection = collection.map(function (item) {
+      return {"title": item.data.title, "url":item.url};
+    });
+    return mappedCollection;
+  });
+
+  eleventyConfig.addFilter("mapBreadCrumbs", function(collection) {
+    var mappedCollection = collection.map(function (item) {
+      return {"text": item.title, "href":item.url};
+    });
+    return mappedCollection;
   });
 
   // Minify CSS
@@ -75,11 +84,20 @@ module.exports = function(eleventyConfig) {
     return content;
   });
 
+  // Universal slug filter strips unsafe chars from URLs
+  eleventyConfig.addFilter("slugify", function(str) {
+    return slugify(str, {
+      lower: true,
+      replacement: "-",
+      remove: /[*+~.·,()'"`´%!?¿:@]/g
+    });
+  });
+
   // Don't process folders with static assets e.g. images
   eleventyConfig.addPassthroughCopy("favicon.ico");
   eleventyConfig.addPassthroughCopy("static/img");
   eleventyConfig.addPassthroughCopy("admin");
-  eleventyConfig.addPassthroughCopy("_includes/assets/css/inline.css");
+  eleventyConfig.addPassthroughCopy("_includes/assets/");
 
   /* Markdown Plugins */
   let markdownIt = require("markdown-it");

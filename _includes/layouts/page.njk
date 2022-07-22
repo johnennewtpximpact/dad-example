@@ -1,7 +1,23 @@
----
-layout: layouts/base.njk
-section: page
----
-<h1>{{ title }}</h1>
+{% set landingPage = true %}
 
+
+{% extends "includes/app-layout.njk" %}
+
+{% block breadcrumb %}
+
+
+{% set breadcrumbItems = collections.all | eleventyNavigationBreadcrumb(eleventyNavigation.key) | mapBreadCrumbs %}
+
+{{ breadcrumb({
+  items: breadcrumbItems,
+  href: url,
+  text: title
+}) }}
+
+{% endblock %}
+
+{% block bodyContent %}
 {{ layoutContent | safe }}
+{% endblock %}
+
+

@@ -1,0 +1,12 @@
+
+{{ breadcrumbs | dump | safe }}
+{{ breadcrumb({
+  items: [
+    {
+      href: "/",
+      text: "Homely"
+    }
+  ],
+  href: "/blueprint",
+  text: "Blueprint"
+}) }}
